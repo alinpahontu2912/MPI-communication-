@@ -1,0 +1,45 @@
+Pahontu Alin 331CA 
+
+Observation: I have not taken into consideration the command line variable
+<eroare_de_comunicatie> and worked from the beginning by considering there is 
+no connection between clusters 0 and 1, with cluster 2 acting as an intermediary.
+This way, I did not have to make 2 separate implementations for the bonus and
+the noral tasks. 
+ 
+Finding the topology:
+
+-> each cluster has a vector 'topology' which describes to which cluster does
+every prcess belong to
+-> after each cluster reads from their specific file, they will send messages
+to their workers, containing the id of their cluster and update their topology
+vector with their neighbors
+-> the workers will then receive this message and know who to expect future 
+messages from
+-> clusters 0 and 1 will send their number of workers and their newly updated
+topology vector to cluster 2, which will process this information, thus being
+the first process to know the correct topology
+-> cluster 2 will print the result and will then send it forward to its workers 
+and to clusters 0 and 1
+-> once received by the other corrdinators, they will print the topology and will
+send it forward to their workers
+-> the workers will now receive the topology and will print it
+
+Calculating the sum:
+
+-> each worker will be assigned an id (ranging from 0 to number of processes - 3),
+in order to split the work equally among them
+-> each worker will receive the vector created by master 0 and will perform its task
+(doubling up elements), in a certain area of the vector, calculated based on their id
+and number of total elements in the vector (this ensures an even distribution of work
+between processes)
+-> workers will send their coordinators their processed version of the vector
+-> master 2 serves as an intermediary between 0 and 1, so the logic is the following:
+workers from cluster 1 send their messages to master 1, who will then send them to
+master 2
+-> master 2 will then send all receivedd vectors from its workers and cluster 1 to 
+master 0, who will now have to reassemble it and print the result
+
+Bonus:
+-As mentioned in the observation, the <eroare_de_comunicatie> will not change the 
+flow of the program, since I started from the beginning by thinking of 2 as an
+intermediary between the communication of 0 and 1
